@@ -1,0 +1,23 @@
+{
+  "name": "web-ssp",
+  "version": "1.0.0",
+  "description": "Schere Stein Papier zum Online spielen",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FoxCodesDE/web-ssp.git"
+  },
+  "author": "FoxCodes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FoxCodesDE/web-ssp/issues"
+  },
+  "homepage": "https://github.com/FoxCodesDE/web-ssp#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
