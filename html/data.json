@@ -1,0 +1,27 @@
+{
+    "schere": {
+        "display": "✌️",
+        "name": "Schere",
+        "effective": { "papier": "zerschneidet", "streichholz": "zerschneidet" }
+    },
+    "stein": {
+        "display": "👊",
+        "name": "Stein",
+        "effective": { "schere": ["macht", "stumpf"], "streichholz": "zerschlägt" }
+    },
+    "papier": {
+        "display": "✋",
+        "name": "Papier",
+        "effective": { "stein": "umwickelt", "brunnen": "bedeckt" }
+    },
+    "brunnen": {
+        "display": "👌",
+        "name": "Brunnen",
+        "effective": { "stein": ["lässt", "hereinfallen"], "schere": ["lässt", "hereinfallen"] }
+    },
+    "streichholz": {
+        "display": "👆",
+        "name": "Streichholz",
+        "effective": { "papier": ["zündet", "an"], "brunnen": "schwimmt in" }
+    }
+}

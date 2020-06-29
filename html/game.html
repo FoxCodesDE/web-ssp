@@ -1,0 +1,216 @@
+<html>
+    <head>
+        <title>Web-SSP</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+            integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+            crossorigin="anonymous"
+        />
+        <script
+            src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"
+        ></script>
+        <script></script>
+    </head>
+    <body>
+        <div id="ui_landingpage" class="container">
+            <br />
+            <div class="row">
+                <div class="input-group col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Nickname</span>
+                    </div>
+                    <input
+                        id="nickname"
+                        type="text"
+                        class="form-control"
+                        placeholder="Pleb vorm Herrn"
+                        aria-label="Nickname"
+                        aria-describedby="basic-addon1"
+                        autocomplete="off"
+                    />
+                </div>
+                <button class="btn btn-primary col-3" id="btn-savenick" type="button">
+                    Nicknamen speichern
+                </button>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-1"></div>
+                <button class="btn btn-primary col" id="btn-newgame" type="button">
+                    Neues Spiel
+                </button>
+                <div class="col-1"></div>
+                <button class="btn btn-primary col" id="btn-joingame" type="button">
+                    Spiel beitreten
+                </button>
+                <div class="col-1"></div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="input-group col">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Game-ID</span>
+                    </div>
+                    <input
+                        id="joingame-id"
+                        type="text"
+                        class="form-control"
+                        placeholder="Game-ID"
+                        aria-label="Game-ID"
+                        aria-describedby="basic-addon1"
+                    />
+                </div>
+                <button class="btn btn-primary col" id="btn-joingame-join" type="button">
+                    Beitreten!
+                </button>
+            </div>
+        </div>
+        <br />
+        <div id="ui_ingame" class="container">
+            <div id="gamebuttons" class="row"></div>
+            <div id="battle" style="padding: 70px 0;" class="row">
+                <div class="col-2"></div>
+                <div class="col">
+                    <h1 id="result_u_display" style="text-align: center; font-size: 100px;">✌️</h1>
+                    <h1 id="result_u_name" style="text-align: center;">Schere</h1>
+                    <h4 style="text-align: center;">Du&nbsp;<span id="result_score"></span></h4>
+                </div>
+                <div class="col">
+                    <h1 id="result_oppo_display" style="text-align: center; font-size: 100px;">
+                        ✌️
+                    </h1>
+                    <h1 id="result_oppo_name" style="text-align: center;">Schere</h1>
+                    <h4 style="text-align: center;">
+                        Gegner&nbsp;<span id="result_oppo_score"></span>
+                    </h4>
+                </div>
+                <div class="col-2"></div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h1 id="result_display" style="text-align: center; font-size: 150px;">✌️✌️</h1>
+                    <h1 id="result_text" style="text-align: center;">
+                        Schere gegen Schere: unentschieden
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <script>
+            let socket = io();
+            let game_data = {};
+            let user_id = '';
+
+            socket.on('gamecreated', function (msg) {
+                console.log(msg);
+            });
+
+            socket.on('test', console.log);
+
+            socket.on('uruser', (usr) => {
+                $('#nickname').val(usr);
+                user_id = usr;
+            });
+
+            socket.on('roundend', (opponick, result, input, oppoinput, score, opposcore) => {
+                console.log(
+                    JSON.stringify({ opponick, result, input, oppoinput, score, opposcore })
+                );
+
+                $('#result_u_display').text(game_data[input].display);
+                $('#result_u_name').text(game_data[input].name);
+                $('#result_oppo_display').text(game_data[oppoinput].display);
+                $('#result_oppo_name').text(game_data[oppoinput].name);
+
+                $('#result_score').text(score);
+                $('#result_oppo_score').text(opposcore);
+
+                if (result === '') {
+                    // unentschieden, beide anzeigen
+                    $('#result_display').text(
+                        `${game_data[input].display}${game_data[oppoinput].display}`
+                    );
+                    $('#result_text').text(
+                        `${game_data[input].name} gegen ${game_data[oppoinput].name}: unentschieden`
+                    );
+                } else if (result === user_id) {
+                    // selbst gewonnen
+                    $('#result_display').text(`${game_data[input].display}`);
+                    $('#result_text').text(
+                        `${game_data[input].name} ${
+                            Array.isArray(game_data[input].effective[oppoinput])
+                                ? `${game_data[input].effective[oppoinput][0]} ${game_data[oppoinput].name} ${game_data[input].effective[oppoinput][1]}`
+                                : `${game_data[input].effective[oppoinput]} ${game_data[oppoinput].name}`
+                        } `
+                    );
+                } else {
+                    // gegner gewonnen
+                    $('#result_display').text(`${game_data[oppoinput].display}`);
+                    $('#result_text').text(
+                        `${game_data[oppoinput].name} ${
+                            Array.isArray(game_data[oppoinput].effective[input])
+                                ? `${game_data[oppoinput].effective[input][0]} ${game_data[input].name} ${game_data[oppoinput].effective[input][1]}`
+                                : `${game_data[oppoinput].effective[input]} ${game_data[input].name}`
+                        } `
+                    );
+                }
+            });
+
+            $('#btn-savenick').click(() => {
+                socket.emit('savenick', $('#nickname').val());
+            });
+
+            $('#btn-newgame').click(() => {
+                console.log('ban');
+                socket.emit('creategame');
+            });
+
+            $('#btn-joingame-join').click(() => {
+                socket.emit('joingame', $('#joingame-id').val());
+            });
+
+            const parsedUrl = new URL(window.location.href);
+            if (parsedUrl.searchParams.get('id') !== null) {
+                socket.emit('joingame', parsedUrl.searchParams.get('id'));
+            }
+
+            function gameinput(input) {
+                socket.emit('gameinput', input);
+            }
+
+            fetch('/data')
+                .then((data) => data.json())
+                .then((data) => {
+                    game_data = data;
+                    //lost
+                    for (let i in data) {
+                        let k = data[i];
+
+                        k.el = `<div id="btn_game_${i}" onclick="gameinput('${i}');" class="col btn btn-primary" style="margin: 0 10px;">
+                            <h2 style="text-align: center;">${k.display}</h2>
+                            <h5 style="text-align: center;">${k.name}</h5>
+                        </div>`;
+
+                        $(`#btn_game_${i}`).click(() => {
+                            socket.emit('gameinput', i);
+                        });
+
+                        $('#gamebuttons').append(k.el);
+                    }
+                });
+        </script>
+    </body>
+</html>
