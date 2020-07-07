@@ -29,6 +29,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/html/game.html');
 });
 
+app.get('/game.js', (req, res) => {
+    res.sendFile(__dirname + '/html/game.js');
+});
+
 app.get('/data', (req, res) => {
     res.sendFile(__dirname + '/html/data.json');
 });
@@ -103,7 +107,8 @@ io.on('connection', (socket) => {
             users[uid].currentgame = gameid;
             users[uid].currentgamerole = 'guest';
 
-            socket.emit('gamejoined', gameid);
+            socket.emit('gamejoined', gameid, users[currentgames[gameid].owner].nick);
+            users[currentgames[gameid].owner].socket.emit('guestjoined', users[uid].nick);
         }
     });
 
